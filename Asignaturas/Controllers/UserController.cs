@@ -33,6 +33,7 @@ namespace Asignaturas.Controllers
             return Ok(_user.GetUserByIdeentification(identification));
         }
 
+
         [HttpPost]
         [Route("CreateUser")]
         public IActionResult CreateUser(User user)
