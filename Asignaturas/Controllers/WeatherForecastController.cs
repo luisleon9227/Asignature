@@ -1,9 +1,10 @@
+using Asignaturas.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Asignaturas.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -12,10 +13,14 @@ namespace Asignaturas.Controllers
     };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        public IUser _hello;
+        AsignaturesContext _dbcontext;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IUser hello, AsignaturesContext dbcontext)
         {
             _logger = logger;
+            _hello = hello;
+            _dbcontext = dbcontext;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
@@ -28,6 +33,31 @@ namespace Asignaturas.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpGet]
+        [Route("GetHello")]
+        public IActionResult GetHello()
+        {
+            _logger.LogInformation("Entro al metodo correctamente");
+            return Ok(_hello.Get());
+        }
+
+        [HttpGet]
+        [Route("Createdb")]
+        public IActionResult CreateDatabase()
+        {
+            try
+            {
+                _logger.LogDebug("Entro al metodo correctamente");
+                return Ok(_dbcontext.Database.EnsureCreated());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Se presento una exception" + ex.Message.ToString());
+                return BadRequest("Tenemos problemas tecnicos");
+            }
+
         }
     }
 }
